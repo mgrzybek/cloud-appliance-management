@@ -29,16 +29,23 @@
 
     - name: Get vault token for Nomad
       when: vault_token_store_consul_kv | lower == 'true'
-      register: store_result
-      shell: consul kv get nomad/token_nomad-server
+      block:
+          - name: Get vault token from Consul
+            register: store_result
+            shell: consul kv get nomad/token_nomad-server
+
+          - name: Set nomad fact
+            set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
     - name: Get vault token for Nomad
       when: vault_token_store_swift | lower == 'true'
-      register: store_result
-      shell: swift download --output - nomad token_nomad-server
+      block:
+          - name: Get vault token from Swift
+            register: store_result
+            shell: swift download --output - nomad token_nomad-server
 
-    - name: Set nomad fact
-      set_fact: nomad_vault_token="{{ store_result.stdout }}"
+          - name: Set nomad fact
+            set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
     - name: Nomad role
       include_role: name=ansible-nomad
