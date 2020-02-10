@@ -51,5 +51,6 @@
       include_role: name=ansible-nomad
 
     - name: Set HTTP proxy checks
+      when: proxy_consul is defined
       with_items: "{{ proxy_consul }}"
       template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json
