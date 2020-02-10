@@ -29,6 +29,38 @@ vault_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 vault_token_store_consul_kv: true
 vault_token_store_swift: false
 
+vault_policies:
+  # Nomad service vault policy
+  - name: nomad-server
+    paths:
+        - path: auth/token/create/nomad-cluster
+          capabilities:
+              - update
+        - path: auth/token/roles/nomad-cluster
+          capabilities:
+              - read
+        - path: auth/token/lookup-self
+          capabilities:
+              - read
+        - path: auth/token/lookup
+          capabilities:
+              - update
+        - path: auth/token/revoke-accessor
+          capabilities:
+              - update
+        - path: sys/capabilities-self
+          capabilities:
+              - update
+        - path: auth/token/renew-self
+          capabilities:
+              - update
+        - path: auth/token/roles/nomad-server
+          capabilities:
+              - read
+        - path: auth/token/create/nomad-server
+          capabilities:
+             - update
+ 
 ###############################################################################
 # Nomad
 #
