@@ -7,7 +7,7 @@
 
   roles:
     - role: ansible-bootstrap-system
-    - role: github/ansible-consul
+    - role: ansible-consul
     
 - name:  Management services configuration
   hosts: localhost
@@ -15,7 +15,7 @@
 
   tasks:
     - name: Vault role
-      include_role: name=github/ansible-vault
+      include_role: name=ansible-vault
 
     - name: Get vault token for Nomad
       when: vault_token_store_consul_kv | lower == 'true'
@@ -31,7 +31,7 @@
       set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
     - name: Nomad role
-      include_role: name=github/ansible-nomad
+      include_role: name=ansible-nomad
 
     - name: Set HTTP proxy checks
       with_items: "{{ proxy_consul }}"
