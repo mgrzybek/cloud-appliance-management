@@ -41,6 +41,17 @@ parameters:
         description: branch/tag/commit to use
         default: master
 
+    git_repo_username:
+        type: string
+        description: username or token to use
+        default:
+
+    git_repo_password:
+        type: string
+        description: secret
+        hidden: true
+        default:
+
     default_secgroup_id:
         type: string
         description: Default security group to use
@@ -150,7 +161,12 @@ resources:
                         export CONSUL_BOOTSTRAP_EXPECT=1
 
                         # Autoconf the appliance
-                        git clone -b $git_repo_checkout $git_repo_url $REPO_PATH || exit 1
+                        if [ ! -z "$git_repo_username$git_repo_password" ] ; then
+                            auth_git_repo_url=$(echo $git_repo_url | awk -F// -v user=$git_repo_username  -v password=$git_repo_password '{print $1"//"user":"password"@"$2}')
+                            git clone -b $git_repo_checkout $auth_git_repo_url $REPO_PATH || exit 1
+                        else
+                            git clone -b $git_repo_checkout $git_repo_url $REPO_PATH || exit 1
+                        fi
                         . $REPO_PATH/management.appliance.autoconf.sh
 
                         # Stop secure shell
