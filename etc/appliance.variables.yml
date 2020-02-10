@@ -79,5 +79,6 @@ vault_role_tokens:
 # Nomad
 #
 nomad_server_mode: true
+nomad_bootstrap_expect: "{{ lookup('env', 'CONSUL_BOOTSTRAP_EXPECT') }}"
 nomad_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 nomad_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
