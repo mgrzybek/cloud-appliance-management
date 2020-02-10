@@ -38,9 +38,9 @@ ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.yml
 udevadm trigger
 
 ansible-playbook -t os-ready $PLAYBOOK \
-	-e@$ETC_PATH/management.variables.yml \
+	-e@$ETC_PATH/appliance.variables.yml \
 	|| exit 1
 
 ansible-playbook -t master $PLAYBOOK \
-	-e@$ETC_PATH/management.variables.yml \
+	-e@$ETC_PATH/appliance.variables.yml \
 	|| exit 1
