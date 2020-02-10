@@ -1,6 +1,6 @@
 #! /usr/bin/env/bash
 
-cat > /root/appliance/management/management.appliance.reconf.sh <<EOF
+cat > /root/appliance/management.appliance.reconf.sh <<EOF
 export ETC_PATH=$ETC_PATH
 export REPO_PATH=$REPO_PATH
 
