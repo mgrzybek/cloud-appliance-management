@@ -50,6 +50,12 @@
     - name: Nomad role
       include_role: name=ansible-nomad
 
+    - name: Set VAULT_ADDR into /etc/environment
+      lineinfile:
+          regexp: '^VAULT_ADDR'
+          path: /etc/environment
+          line: "VAULT_ADDR=http://localhost:8200"
+
     - name: Set HTTP proxy checks
       when: proxy_consul is defined
       with_items: "{{ proxy_consul }}"
