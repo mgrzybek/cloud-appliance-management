@@ -1,0 +1,38 @@
+###############################################################################
+# OS-Ready
+#
+- name: Nodes configuration
+  hosts: localhost
+  tags: os-ready
+
+  roles:
+    - role: ansible-bootstrap-system
+    - role: github/ansible-consul
+    
+- name:  Management services configuration
+  hosts: localhost
+  tags: master
+
+  tasks:
+    - name: Vault role
+      include_role: name=github/ansible-vault
+
+    - name: Get vault token for Nomad
+      when: vault_token_store_consul_kv | lower == 'true'
+      register: store_result
+      shell: consul kv get nomad/token_nomad-server
+
+    - name: Get vault token for Nomad
+      when: vault_token_store_swift | lower == 'true'
+      register: store_result
+      shell: swift download --output - nomad token_nomad-server
+
+    - name: Set nomad fact
+      set_fact: nomad_vault_token="{{ store_result.stdout }}"
+
+    - name: Nomad role
+      include_role: name=github/ansible-nomad
+
+    - name: Set HTTP proxy checks
+      with_items: "{{ proxy_consul }}"
+      template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json
