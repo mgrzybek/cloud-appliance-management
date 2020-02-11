@@ -13,6 +13,7 @@ export PLAYBOOK="$PLAYBOOK -v"
 
 export CONSUL_DATACENTER=$CONSUL_DATACENTER
 export CONSUL_DNS_DOMAIN=$CONSUL_DNS_DOMAIN
+export CONSUL_BOOTSTRAP_EXPECT=$CONSUL_BOOTSTRAP_EXPECT
 
 export OS_AUTH_URL=$OS_AUTH_URL
 export OS_IDENTITY_API_VERSION=$OS_IDENTITY_API_VERSION
@@ -31,9 +32,6 @@ sed -i 's/exit 1/false/' $REPO_PATH/management.appliance.autoconf.sh
 EOF
 
 ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.yml
-
-# Sometimes cinder volumes are not linked against /dev/disk/by-id/
-udevadm trigger
 
 ansible-playbook -t os-ready $PLAYBOOK \
 	-e@$ETC_PATH/appliance.variables.yml \
