@@ -96,6 +96,8 @@ resources:
 
                         $git_repo_checkout: { get_param: git_repo_checkout }
                         $git_repo_url: { get_param: git_repo_url }
+                        $git_repo_username: { get_param: git_repo_username }
+                        $git_repo_password: { get_param: git_repo_password }
 
                         #$os_password: { get_param: os_password }
                         #$os_username: { get_param: os_username }
@@ -140,7 +142,7 @@ resources:
                         # Clone the bootstrap git repository
                         export REPO_PATH=/root/appliance
                         export ETC_PATH=$REPO_PATH/etc
-                        export PLAYBOOK=$REPO_PATH/metrics/metrics.appliance.playbook.yml
+                        export PLAYBOOK=$REPO_PATH/management.appliance.playbook.yml
 
                         ## Set the Openstack credentials
                         #export OS_AUTH_URL="$os_auth_url"
@@ -180,8 +182,15 @@ resources:
         type: OS::Neutron::SecurityGroup
         properties:
             description: Security group with webservices ports
-            name: metrics-appliance
+            name: management-appliance
             rules: [
+                {
+                    protocol: tcp,
+                    port_range_min: 8200,
+                    port_range_max: 8200,
+                    remote_ip_prefix: 0.0.0.0/0,
+                    direction: ingress
+                },
                 {
                     protocol: tcp,
                     port_range_min: 8300,
