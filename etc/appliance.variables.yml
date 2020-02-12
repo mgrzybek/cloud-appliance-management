@@ -14,6 +14,7 @@ consul_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 
 consul_server_mode: true
 consul_consul_bootstrap_expect: "{{ lookup('env', 'CONSUL_BOOTSTRAP_EXPECT') }}"
+consul_consul_encrypt: "{{ lookup('env', 'CONSUL_ENCRYPT') }}"
 
 # Multi-datacenter configuration
 #consul_advertise_addr_wan:

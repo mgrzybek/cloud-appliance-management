@@ -80,6 +80,13 @@ parameters:
        type: string
        description: Datacenter name used by Consul server
 
+    consul_encrypt:
+        type: string
+        description: Consul shared secret for cluster communication
+        hidden: true
+        constraints:
+            - length: { min: 44, max: 44 }
+
 resources:
 
 #######################################################
@@ -105,6 +112,7 @@ resources:
 
                         $consul_dns_domain: { get_param: consul_dns_domain }
                         $consul_datacenter: { get_param: consul_datacenter }
+                        $consul_encrypt: { get_param: consul_encrypt }
                     template: |
                         #!/bin/bash
                         set -x
@@ -161,6 +169,7 @@ resources:
                         export CONSUL_DNS_DOMAIN="$consul_dns_domain"
                         export CONSUL_DATACENTER="$consul_datacenter"
                         export CONSUL_BOOTSTRAP_EXPECT=1
+                        export CONSUL_ENCRYPT="$consul_encrypt"
 
                         # Autoconf the appliance
                         if [ ! -z "$git_repo_username$git_repo_password" ] ; then
@@ -315,4 +324,8 @@ resources:
 #######################################################
 # Outputs
 
-#outputs:
+outputs:
+
+    appliance_front_port:
+        description: Front port ID of the appliance
+        value: { get_resource: appliance_front_port }
