@@ -24,6 +24,7 @@ consul_consul_encrypt: "{{ lookup('env', 'CONSUL_ENCRYPT') }}"
 # Vault
 #
 vault_server_mode: true
+vault_tcp_listener: 0.0.0.0:8200
 vault_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 vault_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
