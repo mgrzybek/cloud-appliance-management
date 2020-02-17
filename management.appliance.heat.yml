@@ -66,6 +66,11 @@ parameters:
         type: string
         description: Proxy skiplist
 
+    static_hosts:
+        type: json
+        description: JSON array of host:ip tuples
+        default:
+
     flavor:
         type: string
         description: Cloud flavor to use
@@ -100,6 +105,7 @@ resources:
                     params:
                         $internet_http_proxy_url: { get_param : internet_http_proxy_url }
                         $internet_http_no_proxy: { get_param : internet_http_no_proxy }
+                        $static_hosts: { get_param: static_hosts }
 
                         $git_repo_checkout: { get_param: git_repo_checkout }
                         $git_repo_url: { get_param: git_repo_url }
@@ -139,6 +145,17 @@ resources:
                             apt -y install ansible git jq python3-swiftclient
                         fi
                         
+                        # DNS: Populate /etc/hosts
+                        if [ ! -z "$static_hosts" ] ; then
+                            echo $static_hosts > /tmp/static_hosts
+                            cat /tmp/static_hosts \
+                                | perl -pe 's/\[|\]|{|}//g' \
+                                |  tr ',' '\n' \
+                                | awk -F: '{print $2,$1}' \
+                                | awk '{print $1,$2}' \
+                                >> /etc/hosts
+                        fi
+
                         # Configure ansible to work without an entire environment set
                         sed -i 's/~/\/root/' /etc/ansible/ansible.cfg
                         sed -i 's/^#remote_tmp/remote_tmp/' /etc/ansible/ansible.cfg

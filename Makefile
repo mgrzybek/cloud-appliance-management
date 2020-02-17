@@ -22,8 +22,11 @@ status:
 	@echo "Projet: ${OS_PROJECT_NAME}"
 	@echo "Cloud: ${OS_AUTH_URL}"
 	@echo "#######################################################"
+	@openstack network show ${MANAGEMENT_NET_ID} > /dev/null 2> /dev/null \
+		&& echo network ${MANAGEMENT_NET_ID} is deployed \
+		|| ( echo network ${MANAGEMENT_NET_ID} is not deployed ; exit 1 )
 	@openstack stack show $(STACK) 2> /dev/null \
-		|| echo $(STACK) is not deployed
+		|| ( echo $(STACK) is not deployed ; exit 1 )
 
 .PHONY: help # This help message
 help:
@@ -83,6 +86,7 @@ management:
 		\
 		--parameter internet_http_proxy_url=${MANAGEMENT_HTTP_PROXY} \
 		--parameter internet_http_no_proxy=${MANAGEMENT_NO_PROXY} \
+		--parameter static_hosts=$(MANAGEMENT_STATIC_HOSTS) \
 		\
 		--parameter git_repo_checkout=${GIT_REPO_CHECKOUT} \
 		--parameter git_repo_url=${GIT_REPO_URL} \
