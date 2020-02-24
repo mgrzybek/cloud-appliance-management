@@ -31,6 +31,26 @@ sed -i 's/exit 1/false/' $REPO_PATH/management.appliance.autoconf.sh
 . $REPO_PATH/management.appliance.autoconf.sh
 EOF
 
+export TMP_BIN=/tmp/bin
+
+# Get binaries
+swift download --output-dir=$TMP_BIN binaries
+for z in $TMP_BIN/*.zip ; do 
+	unzip -d /usr/local/bin $z && rm -f $z
+done
+
+if [ -d $TMP_BIN ] ; then
+	cd /usr/local/bin
+	for t in $TMP_BIN/*.gz ; do 
+		tar xf $t && rm -f $t
+	done
+	mv $TMP_BIN/* /usr/local/bin/
+fi
+
+chmod +x /usr/local/bin/*
+
+rm -rf $TMP_BIN
+
 ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.yml
 
 ansible-playbook -t os-ready $PLAYBOOK \

@@ -150,7 +150,7 @@ resources:
                             yum install --assumeyes ansible git jq
                         else
                             apt update
-                            apt -y install ansible git jq python3-swiftclient
+                            apt -y install ansible git jq python3-swiftclient unzip
                         fi
                         
                         # DNS: Populate /etc/hosts
