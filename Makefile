@@ -57,7 +57,8 @@ management:
 		\
 		--parameter flavor=${MANAGEMENT_FLAVOR} \
 		--parameter image_id=${MANAGEMENT_IMAGE_ID} \
-		--parameter node_net_id=${MANAGEMENT_NET_ID} \
+		--parameter front_net_id=${MANAGEMENT_FRONT_NET_ID} \
+		--parameter back_net_id=${MANAGEMENT_BACK_NET_ID} \
 		--parameter default_secgroup_id=$(MANAGEMENT_SECGROUP_ID) \
 		\
 		--parameter internet_http_proxy_url=${MANAGEMENT_HTTP_PROXY} \
@@ -81,7 +82,8 @@ management:
 		\
 		--parameter flavor=${MANAGEMENT_FLAVOR} \
 		--parameter image_id=${MANAGEMENT_IMAGE_ID} \
-		--parameter node_net_id=${MANAGEMENT_NET_ID} \
+		--parameter front_net_id=${MANAGEMENT_FRONT_NET_ID} \
+		--parameter back_net_id=${MANAGEMENT_BACK_NET_ID} \
 		--parameter default_secgroup_id=$(MANAGEMENT_SECGROUP_ID) \
 		\
 		--parameter internet_http_proxy_url=${MANAGEMENT_HTTP_PROXY} \

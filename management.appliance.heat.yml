@@ -12,24 +12,30 @@ parameters:
         constraints:
             - custom_constraint: glance.image
 
-    node_net_id:
+    front_net_id:
         type: string
         description: Network ID to use for the appliance
         constraints:
             - custom_constraint: neutron.network
 
-#    os_username:
-#        type: string
-#        description: Cloud username for some internal batches
+    back_net_id:
+        type: string
+        description: Network ID to use for the appliance
+        constraints:
+            - custom_constraint: neutron.network
 
-#    os_password:
-#        type: string
-#        description: Cloud password for some internal batches
-#        hidden: true
+    os_username:
+        type: string
+        description: Cloud username for some internal batches
 
-#    os_auth_url:
-#        type: string
-#        description: Cloud auth URL
+    os_password:
+        type: string
+        description: Cloud password for some internal batches
+        hidden: true
+
+    os_auth_url:
+        type: string
+        description: Cloud auth URL
 
     git_repo_url:
         type: string
@@ -67,7 +73,7 @@ parameters:
         description: Proxy skiplist
 
     static_hosts:
-        type: json
+        type: string
         description: JSON array of host:ip tuples
         default:
 
@@ -112,9 +118,9 @@ resources:
                         $git_repo_username: { get_param: git_repo_username }
                         $git_repo_password: { get_param: git_repo_password }
 
-                        #$os_password: { get_param: os_password }
-                        #$os_username: { get_param: os_username }
-                        #$os_auth_url: { get_param: os_auth_url }
+                        $os_password: { get_param: os_password }
+                        $os_username: { get_param: os_username }
+                        $os_auth_url: { get_param: os_auth_url }
 
                         $consul_dns_domain: { get_param: consul_dns_domain }
                         $consul_datacenter: { get_param: consul_datacenter }
@@ -170,25 +176,32 @@ resources:
                         export PLAYBOOK=$REPO_PATH/management.appliance.playbook.yml
 
                         ## Set the Openstack credentials
-                        #export OS_AUTH_URL="$os_auth_url"
-                        #export OS_PROJECT_ID=$(awk -F'"' '/project_id/ {print $4}' /run/cloud-init/instance-data.json)
-                        #export OS_USER_DOMAIN_NAME="Default"
-                        #export OS_USERNAME="$os_username"
-                        #export OS_PASSWORD="$os_password"
-                        #export OS_REGION_NAME="RegionOne"
-                        #export OS_INTERFACE=public
-                        #export OS_IDENTITY_API_VERSION=3
+                        export OS_AUTH_URL="$os_auth_url"
+                        export OS_PROJECT_ID=$(awk -F'"' '/project_id/ {print $4}' /run/cloud-init/instance-data.json)
+                        export OS_USER_DOMAIN_NAME="Default"
+                        export OS_USERNAME="$os_username"
+                        export OS_PASSWORD="$os_password"
+                        export OS_REGION_NAME="RegionOne"
+                        export OS_INTERFACE=public
+                        export OS_IDENTITY_API_VERSION=3
                         
                         # Swift container
                         #export VAULT_CONTAINER=$vault_container
+                        export VAULT_CONTAINER=vault
 
                         # Set Consul variables
                         export CONSUL_DNS_DOMAIN="$consul_dns_domain"
                         export CONSUL_DATACENTER="$consul_datacenter"
                         export CONSUL_BOOTSTRAP_EXPECT=1
                         export CONSUL_ENCRYPT="$consul_encrypt"
+                        
+                        export BACK_SUBNET_ID=$(openstack network show back-net -c subnets -f json | jq -Mc '.subnets[0]' | awk'{gsub("\"","");print}')
+                        export BACK_CIDR="$(openstack subnet show $BACK_SUBNET_ID -c cidr -f value)"
 
                         # Autoconf the appliance
+                        ip link show
+                        ip r
+                        while curl -qs $git_repo_url ; do sleep 10 ; done
                         if [ ! -z "$git_repo_username$git_repo_password" ] ; then
                             auth_git_repo_url=$(echo $git_repo_url | awk -F// -v user=$git_repo_username  -v password=$git_repo_password '{print $1"//"user":"password"@"$2}')
                             git clone -b $git_repo_checkout $auth_git_repo_url $REPO_PATH || exit 1
@@ -309,10 +322,15 @@ resources:
     appliance_front_port:
         type: OS::Neutron::Port
         properties:
-            network_id: { get_param: node_net_id }
+            network_id: { get_param: front_net_id }
             security_groups: [
                 { get_param: default_secgroup_id }
             ]
+
+    appliance_back_port:
+        type: OS::Neutron::Port
+        properties:
+            network_id: { get_param: back_net_id }
             security_groups: [
                 { get_param: default_secgroup_id },
                 { get_resource: management_appliance_secgroup }
@@ -326,6 +344,7 @@ resources:
             flavor: { get_param: flavor }
             networks:
                 - port: { get_resource: appliance_front_port }
+                - port: { get_resource: appliance_back_port }
             metadata: {
                 group: management,
                 image: { get_param: image_id }
