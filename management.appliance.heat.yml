@@ -125,6 +125,8 @@ resources:
                         $consul_dns_domain: { get_param: consul_dns_domain }
                         $consul_datacenter: { get_param: consul_datacenter }
                         $consul_encrypt: { get_param: consul_encrypt }
+                        
+                        $appliance_back_port : { get_resource: appliance_back_port}
                     template: |
                         #!/bin/bash
                         set -x
@@ -195,8 +197,7 @@ resources:
                         export CONSUL_BOOTSTRAP_EXPECT=1
                         export CONSUL_ENCRYPT="$consul_encrypt"
                         
-                        export BACK_SUBNET_ID=$(openstack network show back-net -c subnets -f json | jq -Mc '.subnets[0]' | awk'{gsub("\"","");print}')
-                        export BACK_CIDR="$(openstack subnet show $BACK_SUBNET_ID -c cidr -f value)"
+                        export BACK_IP=$(openstack port show $appliance_back_port -c fixed_ips -f json | jq '.fixed_ips[0].ip_address' | awk '{gsub("\"","");print}')
 
                         # Autoconf the appliance
                         ip link show
