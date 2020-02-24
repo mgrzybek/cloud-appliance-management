@@ -41,7 +41,6 @@ help:
 #
 .PHONY: management # Configure management services
 
-		
 management:
 	@test ! -z ${MANAGEMENT_CONSUL_DNS_DOMAIN} \
 		|| (echo MANAGEMENT_CONSUL_DNS_DOMAIN is empty ; exit 1)
@@ -116,9 +115,16 @@ management:
 # Maintenance
 #
 
+# Prepare
+.PHONY: prepare # Download atifacts from internet to Swift
+prepare:
+	@./bin/copy_binaries.sh
+
 # Clean
 .PHONY: clean # Destroy the managenemt appliances
 clean:
+	@swift list | grep -q binaries && swift delete binaries || true
+
 	@openstack stack list | fgrep -q $(STACK) \
 		&& openstack stack delete --wait --yes $(STACK) \
 		|| echo
@@ -129,5 +135,5 @@ rebuild:
 	@openstack server rebuild --wait $(STACK)
 
 .PHONY: all # Deploy the management appliances
-all: management
+all: prepare management
 	@echo
