@@ -40,9 +40,7 @@ help:
 # Hosted services
 #
 .PHONY: management # Configure management services
-# TODO:		--parameter os_username=$(MANAGEMENT_OS_USERNAME) \
-		--parameter os_password=$(MANAGEMENT_OS_PASSWORD) \
-		--parameter os_auth_url=$(MANAGEMENT_OS_AUTH_URL) \
+
 		
 management:
 	@test ! -z ${MANAGEMENT_CONSUL_DNS_DOMAIN} \
@@ -60,6 +58,10 @@ management:
 		--parameter front_net_id=${MANAGEMENT_FRONT_NET_ID} \
 		--parameter back_net_id=${MANAGEMENT_BACK_NET_ID} \
 		--parameter default_secgroup_id=$(MANAGEMENT_SECGROUP_ID) \
+		\
+		--parameter os_username=$(MANAGEMENT_OS_USERNAME) \
+		--parameter os_password=$(MANAGEMENT_OS_PASSWORD) \
+		--parameter os_auth_url=$(MANAGEMENT_OS_AUTH_URL) \
 		\
 		--parameter internet_http_proxy_url=${MANAGEMENT_HTTP_PROXY} \
 		--parameter internet_http_no_proxy=${MANAGEMENT_NO_PROXY} \
@@ -85,6 +87,10 @@ management:
 		--parameter front_net_id=${MANAGEMENT_FRONT_NET_ID} \
 		--parameter back_net_id=${MANAGEMENT_BACK_NET_ID} \
 		--parameter default_secgroup_id=$(MANAGEMENT_SECGROUP_ID) \
+		\
+		--parameter os_username=$(MANAGEMENT_OS_USERNAME) \
+		--parameter os_password=$(MANAGEMENT_OS_PASSWORD) \
+		--parameter os_auth_url=$(MANAGEMENT_OS_AUTH_URL) \
 		\
 		--parameter internet_http_proxy_url=${MANAGEMENT_HTTP_PROXY} \
 		--parameter internet_http_no_proxy=${MANAGEMENT_NO_PROXY} \
