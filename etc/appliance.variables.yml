@@ -1,5 +1,7 @@
-bootstrap_htpdate_servers:
-   - www.wikipedia.org
+#bootstrap_htpdate_servers:
+#   - www.wikipedia.org
+bootstrap_ntpdate_servers:
+   - "{{ lookup('env', 'NTP_SERVER') }}" # TODO: use ntp.service.{{ consul_dns_domain }}
 
 bootstrap_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 bootstrap_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
