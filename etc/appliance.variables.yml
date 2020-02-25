@@ -35,9 +35,9 @@ vault_tcp_listener: 0.0.0.0:8200
 vault_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 vault_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
-vault_token_store_consul_kv: true
+vault_token_store_consul_kv: false
 vault_token_store_swift: true
-vault_keys_store_consul_kv: true
+vault_keys_store_consul_kv: false
 vault_keys_store_swift: true
 
 vault_policies:
