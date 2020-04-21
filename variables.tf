@@ -19,7 +19,7 @@ variable "back_net_id" {
 
 variable "os_username" {
   type        = string
-  description = "loud username for some internal batches"
+  description = "Cloud username for some internal batches"
 }
 
 variable "os_password" {
