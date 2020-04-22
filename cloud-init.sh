@@ -63,16 +63,19 @@ export VAULT_CONTAINER=vault
 
 # Set Consul variables
 export CONSUL_DNS_DOMAIN="${consul_dns_domain}"
+export CONSUL_DNS_SERVER="${consul_dns_server}"
 export CONSUL_DATACENTER="${consul_datacenter}"
 export CONSUL_BOOTSTRAP_EXPECT=1
 export CONSUL_ENCRYPT="${consul_encrypt}"
+export BACK_IP="${backoffice_ip_address}"
 
-export BACK_IP=${backoffice_ip_address}
+# NTP service
+export NTP_SERVER="${ntp_server}"
 
 # Autoconf the appliance
-if [ ! -z "${git_repo_username$git_repo_password}" ] ; then
+if [ ! -z "${git_repo_username}${git_repo_password}" ] ; then
 	auth_git_repo_url=$(echo ${git_repo_url} | awk -F// -v user=${git_repo_username}  -v password=${git_repo_password} '{print $1"//"user":"password"@"$2}')
-	git clone -b ${git_repo_checkout} ${auth_git_repo_url} $REPO_PATH || exit 1
+	git clone -b ${git_repo_checkout} $auth_git_repo_url $REPO_PATH || exit 1
 else
 	git clone -b ${git_repo_checkout} ${git_repo_url} $REPO_PATH || exit 1
 fi
