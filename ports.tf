@@ -10,7 +10,7 @@ resource "openstack_networking_port_v2" "appliance-management-front-port" {
 }
 
 resource "openstack_networking_port_v2" "appliance-management-back-port" {
-  name = "appliance-management-front-port"
+  name = "appliance-management-back-port"
   security_group_ids = [
     var.default_secgroup_id,
     openstack_networking_secgroup_v2.appliance-management-secgroup.id
