@@ -9,6 +9,10 @@ help:
 	| expand -t20 \
 	| sort
 
+.PHONY: fmt # Apply terraform fmt on files
+fmt:
+	@terraform fmt
+
 .PHONY: test # Test syntax using terraform fmt
 test:
 	which terraform
