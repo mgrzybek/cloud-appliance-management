@@ -4,9 +4,7 @@
 resource "openstack_compute_instance_v2" "appliance-management" {
   name      = "management"
   image_id  = var.image_id
-  flavor_id = var.flavor
-
-  key_pair = "mathieu-rsa"
+  flavor_id = var.flavor_id
 
   network {
     port = openstack_networking_port_v2.appliance-management-front-port.id
@@ -39,7 +37,12 @@ resource "openstack_compute_instance_v2" "appliance-management" {
       ntp_server = var.ntp_server,
 
       git_repo_checkout = var.git_repo_checkout,
-      git_repo_url      = var.git_repo_url
+      git_repo_username = var.git_repo_username,
+      git_repo_password = var.git_repo_password,
+
+      git_repo_url = var.git_repo_url,
+
+      backoffice_ip_address = openstack_networking_port_v2.appliance-management-back-port.all_fixed_ips[0]
     }
   )
 }
@@ -54,7 +57,7 @@ resource "openstack_networking_secgroup_v2" "appliance-management-secgroup" {
 }
 
 resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-https" {
-  direction         = "management"
+  direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
   port_range_min    = 443
@@ -64,7 +67,7 @@ resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-
 }
 
 resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-http" {
-  direction         = "management"
+  direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
   port_range_min    = 80
@@ -75,85 +78,79 @@ resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-
 
 # AWS
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server_rpc_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.server_rpc_port
   port_range_max = var.server_rpc_port
   protocol       = "tcp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rpc_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.cli_rpc_port
   port_range_max = var.cli_rpc_port
   protocol       = "tcp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_wan_tcp_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.serf_wan_port
   port_range_max = var.serf_wan_port
   protocol       = "tcp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_wan_udp_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.serf_wan_port
   port_range_max = var.serf_wan_port
   protocol       = "udp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_api_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.http_api_port
   port_range_max = var.http_api_port
   protocol       = "tcp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tcp_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.dns_port
   port_range_max = var.dns_port
   protocol       = "tcp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_udp_inbound" {
-  count          = length(var.allowed_inbound_cidr_blocks) >= 1 ? 1 : 0
-  type           = "ingress"
+  ethertype      = "IPv4"
+  direction      = "ingress"
   port_range_min = var.dns_port
   port_range_max = var.dns_port
   protocol       = "udp"
-  cidr_blocks    = var.allowed_inbound_cidr_blocks
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server_rpc_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.server_rpc_port
   port_range_max  = var.server_rpc_port
   protocol        = "tcp"
@@ -164,7 +161,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rpc_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.cli_rpc_port
   port_range_max  = var.cli_rpc_port
   protocol        = "tcp"
@@ -175,7 +173,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rp
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_wan_tcp_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.serf_wan_port
   port_range_max  = var.serf_wan_port
   protocol        = "tcp"
@@ -186,7 +185,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_w
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_wan_udp_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.serf_wan_port
   port_range_max  = var.serf_wan_port
   protocol        = "udp"
@@ -197,7 +197,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_w
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_api_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.http_api_port
   port_range_max  = var.http_api_port
   protocol        = "tcp"
@@ -208,7 +209,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_a
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tcp_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.dns_port
   port_range_max  = var.dns_port
   protocol        = "tcp"
@@ -219,7 +221,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tc
 
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_udp_inbound_from_security_group_ids" {
   count           = var.allowed_inbound_security_group_count
-  type            = "ingress"
+  ethertype       = "IPv4"
+  direction       = "ingress"
   port_range_min  = var.dns_port
   port_range_max  = var.dns_port
   protocol        = "udp"
