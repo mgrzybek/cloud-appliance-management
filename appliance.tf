@@ -10,6 +10,8 @@ resource "openstack_compute_instance_v2" "appliance-management" {
     port = openstack_networking_port_v2.appliance-management-front-port.id
   }
 
+  depends_on = [ openstack_networking_port_v2.appliance-management-front-port ]
+
   user_data = templatefile(
     "${path.module}/cloud-init.sh",
     {
