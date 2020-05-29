@@ -88,16 +88,16 @@ vault_role_tokens:
 
 vault_vault_ui:
   - service:
-    name: "vault-ui"
-    port: 8200
-    enable_tag_override: false
-    tags:
-       - "traefik.enable=true"
-       - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=http"
-       - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
-    checks:
-       - http: "http://0.0.0.0:8200"
-    interval: "60s"
+      name: "vault-ui"
+      port: 8200
+      enable_tag_override: false
+      tags:
+         - "traefik.enable=true"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=http"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
+      checks:
+         - http: "http://0.0.0.0:8200"
+           interval: "60s"
 
 ###############################################################################
 # Nomad
@@ -109,14 +109,14 @@ nomad_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
 nomad_nomad_ui:
    - service:
-     name: "nomad-ui"
-     tags:
-       - "traefik.enable=true"
-       - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=http"
-       - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
-     port: 4646
-     enable_tag_override: false
-     checks:
-       - http: "http://0.0.0.0:4646"
-         interval: "60s"
+       name: "nomad-ui"
+       port: 4646
+       enable_tag_override: false
+       tags:
+         - "traefik.enable=true"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=http"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
+       checks:
+         - http: "http://0.0.0.0:4646"
+           interval: "60s"
 
