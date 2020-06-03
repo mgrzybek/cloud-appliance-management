@@ -93,7 +93,7 @@ vault_vault_ui:
       enable_tag_override: false
       tags:
          - "traefik.enable=true"
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=http"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=web"
          - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
       checks:
          - http: "http://0.0.0.0:8200"
@@ -114,7 +114,7 @@ nomad_nomad_ui:
        enable_tag_override: false
        tags:
          - "traefik.enable=true"
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=http"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=web"
          - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
        checks:
          - http: "http://0.0.0.0:4646"
