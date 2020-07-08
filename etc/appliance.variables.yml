@@ -92,7 +92,7 @@ vault_vault_ui:
       port: 8200
       enable_tag_override: false
       tags:
-         - "traefik.enable=true"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
          - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=web"
          - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
       checks:
@@ -113,7 +113,7 @@ nomad_nomad_ui:
        port: 4646
        enable_tag_override: false
        tags:
-         - "traefik.enable=true"
+         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
          - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=web"
          - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
        checks:

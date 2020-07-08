@@ -52,6 +52,7 @@ variable "git_repo_password" {
 variable "git_repo_url" {
   type        = string
   description = "cloud-appliance-management repo"
+  default     = "https://github.com/mgrzybek/cloud-appliance-management"
 }
 
 variable "git_repo_checkout" {
@@ -164,5 +165,14 @@ variable "dns_port" {
   description = "The port used to resolve DNS queries."
   type        = number
   default     = 8600
+}
+
+
+##############################################################################
+# Management
+variable "traefik_consul_prefix" {
+type = string
+description = "Prefix used in services metadata to manage traefik's attributes"
+default = "admin"
 }
 

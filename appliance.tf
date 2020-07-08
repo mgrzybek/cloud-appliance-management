@@ -45,6 +45,9 @@ resource "openstack_compute_instance_v2" "appliance-management" {
       git_repo_url = var.git_repo_url,
 
       backoffice_ip_address = openstack_networking_port_v2.appliance-management-back-port.all_fixed_ips[0]
+
+
+traefik_consul_prefix = var.traefik_consul_prefix
     }
   )
 }
@@ -78,7 +81,6 @@ resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
-# AWS
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server_rpc_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
@@ -94,6 +96,16 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rp
   direction      = "ingress"
   port_range_min = var.cli_rpc_port
   port_range_max = var.cli_rpc_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_lan_tcp_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.serf_lan_port
+  port_range_max = var.serf_lan_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
