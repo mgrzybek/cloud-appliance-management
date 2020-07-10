@@ -33,7 +33,7 @@ consul_consul_encrypt: "{{ lookup('env', 'CONSUL_ENCRYPT') }}"
 ###############################################################################
 # Vault
 #
-vault_vault_version: 1.4.0
+vault_vault_version: 1.4.3
 vault_package_state: present
 
 vault_server_mode: true
@@ -105,6 +105,8 @@ vault_vault_ui:
 ###############################################################################
 # Nomad
 #
+nomad_nomad_version: 0.12.0
+
 nomad_server_mode: true
 nomad_bootstrap_expect: "{{ lookup('env', 'CONSUL_BOOTSTRAP_EXPECT') }}"
 nomad_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
