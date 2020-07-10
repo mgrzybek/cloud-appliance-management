@@ -171,8 +171,8 @@ variable "dns_port" {
 ##############################################################################
 # Management
 variable "traefik_consul_prefix" {
-type = string
-description = "Prefix used in services metadata to manage traefik's attributes"
-default = "admin"
+  type        = string
+  description = "Prefix used in services metadata to manage traefik's attributes"
+  default     = "admin"
 }
 

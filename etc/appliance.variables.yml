@@ -1,11 +1,11 @@
 #bootstrap_htpdate_servers:
 #   - www.wikipedia.org
 bootstrap_ntpdate_servers:
-   - "{{ lookup('env', 'NTP_SERVER') }}" # TODO: use ntp.service.{{ consul_dns_domain }}
+- "{{ lookup('env', 'NTP_SERVER') }}"    # TODO: use ntp.service.{{ consul_dns_domain }}
 
 bootstrap_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 bootstrap_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
-bootstrap_http_proxy_packages: ""
+bootstrap_http_proxy_packages: ''
 
 ###############################################################################
 # Consul
@@ -48,59 +48,59 @@ vault_keys_store_swift: true
 
 vault_policies:
   # Nomad service vault policy
-  - name: nomad-server
-    paths:
-        - path: auth/token/create/nomad-cluster
-          capabilities:
-              - update
-        - path: auth/token/roles/nomad-cluster
-          capabilities:
-              - read
-        - path: auth/token/lookup-self
-          capabilities:
-              - read
-        - path: auth/token/lookup
-          capabilities:
-              - update
-        - path: auth/token/revoke-accessor
-          capabilities:
-              - update
-        - path: sys/capabilities-self
-          capabilities:
-              - update
-        - path: auth/token/renew-self
-          capabilities:
-              - update
-        - path: auth/token/roles/nomad-server
-          capabilities:
-              - read
-        - path: auth/token/create/nomad-server
-          capabilities:
-             - update
+- name: nomad-server
+  paths:
+  - path: auth/token/create/nomad-cluster
+    capabilities:
+    - update
+  - path: auth/token/roles/nomad-cluster
+    capabilities:
+    - read
+  - path: auth/token/lookup-self
+    capabilities:
+    - read
+  - path: auth/token/lookup
+    capabilities:
+    - update
+  - path: auth/token/revoke-accessor
+    capabilities:
+    - update
+  - path: sys/capabilities-self
+    capabilities:
+    - update
+  - path: auth/token/renew-self
+    capabilities:
+    - update
+  - path: auth/token/roles/nomad-server
+    capabilities:
+    - read
+  - path: auth/token/create/nomad-server
+    capabilities:
+    - update
 
 vault_role_tokens:
   # Generate Nomad token
-  - role: nomad-server
-    strategy:
-      disallowed_policies: "nomad-server"
-      explicit_max_ttl: 0
-      name: "nomad-server"
-      orphan: true
-      period: 259200
-      renewable: true
+- role: nomad-server
+  strategy:
+    disallowed_policies: nomad-server
+    explicit_max_ttl: 0
+    name: nomad-server
+    orphan: true
+    period: 259200
+    renewable: true
 
 vault_vault_ui:
-  - service:
-      name: "vault-ui"
-      port: 8200
-      enable_tag_override: false
-      tags:
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=web"
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
-      checks:
-         - http: "http://0.0.0.0:8200"
-           interval: "60s"
+- service:
+    name: vault-ui
+    port: 8200
+    enable_tag_override: false
+    tags:
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=web"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
+    checks:
+    - http: http://0.0.0.0:8200
+      interval: 60s
 
 ###############################################################################
 # Nomad
@@ -113,15 +113,15 @@ nomad_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 nomad_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
 nomad_nomad_ui:
-   - service:
-       name: "nomad-ui"
-       port: 4646
-       enable_tag_override: false
-       tags:
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=web"
-         - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
-       checks:
-         - http: "http://0.0.0.0:4646"
-           interval: "60s"
+- service:
+    name: nomad-ui
+    port: 4646
+    enable_tag_override: false
+    tags:
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=web"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
+    checks:
+    - http: http://0.0.0.0:4646
+      interval: 60s
 
