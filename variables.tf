@@ -2,7 +2,7 @@
 # Cloud
 #
 
-variable "image_id" {
+variable "image_name" {
   type        = string
   description = "Operating system image to use"
 }
@@ -90,7 +90,7 @@ variable "static_hosts" {
   default     = ""
 }
 
-variable "flavor_id" {
+variable "flavor_name" {
   type        = string
   description = "Cloud flavor to use"
 }
@@ -171,8 +171,8 @@ variable "dns_port" {
 ##############################################################################
 # Management
 variable "traefik_consul_prefix" {
-type = string
-description = "Prefix used in services metadata to manage traefik's attributes"
-default = "admin"
+  type        = string
+  description = "Prefix used in services metadata to manage traefik's attributes"
+  default     = "admin"
 }
 

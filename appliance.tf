@@ -2,15 +2,15 @@
 # Instances
 #
 resource "openstack_compute_instance_v2" "appliance-management" {
-  name      = "management"
-  image_id  = var.image_id
-  flavor_id = var.flavor_id
+  name        = "management"
+  image_name  = var.image_name
+  flavor_name = var.flavor_name
 
   network {
     port = openstack_networking_port_v2.appliance-management-front-port.id
   }
 
-  depends_on = [ openstack_networking_port_v2.appliance-management-front-port ]
+  depends_on = [openstack_networking_port_v2.appliance-management-front-port]
 
   user_data = templatefile(
     "${path.module}/cloud-init.sh",
@@ -47,7 +47,7 @@ resource "openstack_compute_instance_v2" "appliance-management" {
       backoffice_ip_address = openstack_networking_port_v2.appliance-management-back-port.all_fixed_ips[0]
 
 
-traefik_consul_prefix = var.traefik_consul_prefix
+      traefik_consul_prefix = var.traefik_consul_prefix
     }
   )
 }
