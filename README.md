@@ -25,12 +25,14 @@ No requirements.
 | consul\_encrypt | Consul shared secret for cluster communication | `string` | n/a | yes |
 | default\_secgroup\_id | Default security group to use | `string` | n/a | yes |
 | dns\_port | The port used to resolve DNS queries. | `number` | `8600` | no |
-| flavor\_id | Cloud flavor to use | `string` | n/a | yes |
+| flavor\_name | Cloud flavor to use | `string` | n/a | yes |
 | front\_net\_id | Network ID to use for the appliance | `string` | n/a | yes |
 | git\_repo\_checkout | branch/tag/commit to use | `string` | `"master"` | no |
-| git\_repo\_url | cloud-appliance-management repo | `string` | n/a | yes |
+| git\_repo\_password | git password | `string` | `""` | no |
+| git\_repo\_url | cloud-appliance-management repo | `string` | `"https://github.com/mgrzybek/cloud-appliance-management"` | no |
+| git\_repo\_username | git username | `string` | `""` | no |
 | http\_api\_port | The port used by clients to talk to the HTTP API | `number` | `8500` | no |
-| image\_id | Operating system image to use | `string` | n/a | yes |
+| image\_name | Operating system image to use | `string` | n/a | yes |
 | internet\_http\_no\_proxy | Proxy skiplist | `string` | `""` | no |
 | internet\_http\_proxy\_url | HTTP proxy | `string` | `""` | no |
 | ntp\_server | Remote NTP to use for sync | `string` | `""` | no |
@@ -42,12 +44,14 @@ No requirements.
 | serf\_wan\_port | The port used by servers to gossip over the WAN to other servers. | `number` | `8302` | no |
 | server\_rpc\_port | The port used by servers to handle incoming requests from other agents. | `number` | `8300` | no |
 | static\_hosts | JSON array of host:ip tuples | `string` | `""` | no |
+| traefik\_consul\_prefix | Prefix used in services metadata to manage traefik's attributes | `string` | `"admin"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | appliance\_back\_ip | Back office IPv4 address |
+| appliance\_back\_port | Back office port ID |
 | appliance\_front\_ip | Front office IPv4 address |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
