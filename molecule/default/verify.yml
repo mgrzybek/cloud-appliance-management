@@ -1,0 +1,15 @@
+- name: Verify
+  hosts: all
+  tasks:
+  - name: Test nomad jobs
+    command: nomad job status
+
+  - name: Test nomad server role
+    register: result
+    command: nomad server members -no-color
+
+  - name: Check nomad membership
+    fail: msg="Nomad must be a server and alive"
+    when:
+      - ((result.stdout_lines[1] | regex_replace('\s+', ' ')).split(' '))[3] != 'alive'
+      - ((result.stdout_lines[1] | regex_replace('\s+', ' ')).split(' '))[4] != 'true'
