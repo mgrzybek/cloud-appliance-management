@@ -2,61 +2,61 @@
 # OS-Ready
 #
 - name: Nodes configuration
-  hosts: localhost
+  hosts: all
   tags: os-ready
 
   roles:
-  - role: ansible-bootstrap-system
-  - role: ansible-consul
-
-- name: Management services configuration
-  hosts: localhost
+    - role: ansible-bootstrap-system
+    - role: ansible-consul
+    
+- name:  Management services configuration
+  hosts: all
   tags: master
 
   tasks:
-  - name: Wait for Consul to be online
-    wait_for: port=8500 timeout=20
+    - name: Wait for Consul to be online
+      wait_for: port=8500 timeout=20
 
-  - name: Wait for consul quorum
-    ignore_errors: yes
-    retries: 300
-    delay: 10
-    register: catalog_info
-    command: consul catalog services
+    - name: Wait for consul quorum
+      ignore_errors: yes
+      retries: 300
+      delay: 10
+      register: catalog_info
+      command: consul catalog services
 
-  - name: Vault role
-    include_role: name=ansible-vault
+    - name: Vault role
+      include_role: name=ansible-vault
 
-  - name: Get vault token for Nomad
-    when: vault_token_store_consul_kv | lower == 'true'
-    block:
-    - name: Get vault token from Consul
-      register: store_result
-      shell: consul kv get nomad/token_nomad-server
+    - name: Get vault token for Nomad
+      when: vault_token_store_consul_kv | lower == 'true'
+      block:
+          - name: Get vault token from Consul
+            register: store_result
+            shell: consul kv get nomad/token_nomad-server
 
-    - name: Set nomad fact
-      set_fact: nomad_vault_token="{{ store_result.stdout }}"
+          - name: Set nomad fact
+            set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
-  - name: Get vault token for Nomad
-    when: vault_token_store_swift | lower == 'true'
-    block:
-    - name: Get vault token from Swift
-      register: store_result
-      shell: swift download --output - nomad token_nomad-server
+    - name: Get vault token for Nomad
+      when: vault_token_store_swift | lower == 'true'
+      block:
+          - name: Get vault token from Swift
+            register: store_result
+            shell: swift download --output - nomad token_nomad-server
 
-    - name: Set nomad fact
-      set_fact: nomad_vault_token="{{ store_result.stdout }}"
+          - name: Set nomad fact
+            set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
-  - name: Nomad role
-    include_role: name=ansible-nomad
+    - name: Nomad role
+      include_role: name=ansible-nomad
 
-  - name: Set VAULT_ADDR into /etc/environment
-    lineinfile:
-      regexp: ^VAULT_ADDR
-      path: /etc/environment
-      line: VAULT_ADDR=http://localhost:8200
+    - name: Set VAULT_ADDR into /etc/environment
+      lineinfile:
+          regexp: '^VAULT_ADDR'
+          path: /etc/environment
+          line: "VAULT_ADDR=http://localhost:8200"
 
-  - name: Set HTTP proxy checks
-    when: proxy_consul is defined
-    with_items: '{{ proxy_consul }}'
-    template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json
+    - name: Set HTTP proxy checks
+      when: proxy_consul is defined
+      with_items: "{{ proxy_consul }}"
+      template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json

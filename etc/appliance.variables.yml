@@ -10,8 +10,6 @@ bootstrap_http_proxy_packages: ''
 ###############################################################################
 # Consul
 #
-consul_consul_version: 1.8.0
-
 consul_ui_traefik_prefix: "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}"
 consul_ui_content_path: /consul/
 
@@ -36,9 +34,6 @@ consul_consul_encrypt: "{{ lookup('env', 'CONSUL_ENCRYPT') }}"
 ###############################################################################
 # Vault
 #
-vault_vault_version: 1.4.3
-vault_package_state: present
-
 vault_server_mode: true
 vault_tcp_listener: 0.0.0.0:8200
 vault_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
@@ -108,8 +103,6 @@ vault_vault_ui:
 ###############################################################################
 # Nomad
 #
-nomad_nomad_version: 0.12.0
-
 nomad_server_mode: true
 nomad_bootstrap_expect: "{{ lookup('env', 'CONSUL_BOOTSTRAP_EXPECT') }}"
 nomad_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
