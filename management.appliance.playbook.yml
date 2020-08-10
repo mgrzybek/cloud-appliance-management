@@ -2,7 +2,7 @@
 # OS-Ready
 #
 - name: Nodes configuration
-  hosts: localhost
+  hosts: all
   tags: os-ready
 
   roles:
@@ -10,7 +10,7 @@
   - role: ansible-consul
 
 - name: Management services configuration
-  hosts: localhost
+  hosts: all
   tags: master
 
   tasks:

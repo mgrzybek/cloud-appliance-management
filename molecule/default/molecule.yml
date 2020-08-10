@@ -1,0 +1,102 @@
+driver:
+  name: docker
+
+platforms:
+- name: centos8
+  registry:
+    url: docker.io/library
+  image: centos:8
+  privileged: true
+  dockerfile: Dockerfile.centos.j2
+  override_command: false
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - ${PWD}/..:/root/appliance:ro
+  tty: true
+  buildargs:
+    container: docker
+    http_proxy: ${http_proxy}
+    https_proxy: ${https_proxy}
+    no_proxy: 127.0.0.1,localhost,0.0.0.0
+  environment:
+    container: docker
+    http_proxy: ${http_proxy}
+    https_proxy: ${https_proxy}
+    no_proxy: 127.0.0.1,localhost,0.0.0.0
+#- name: ubuntu20.04
+#  registry:
+#    url: docker.io/library
+#  image: ubuntu:20.04
+#  privileged: true
+#  dockerfile: Dockerfile.ubuntu.j2
+#  override_command: false
+#  volumes:
+#  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+#  - ${PWD}/..:/root/appliance:ro
+#  tty: true
+#  buildargs:
+#    container: docker
+#    http_proxy: ${http_proxy}
+#    https_proxy: ${https_proxy}
+#    no_proxy: 127.0.0.1,localhost,0.0.0.0
+#  environment:
+#    container: docker
+#    http_proxy: ${http_proxy}
+#    https_proxy: ${https_proxy}
+#    no_proxy: 127.0.0.1,localhost,0.0.0.0
+- name: ubuntu18.04
+  registry:
+    url: docker.io/library
+  image: ubuntu:18.04
+  privileged: true
+  dockerfile: Dockerfile.ubuntu.j2
+  override_command: false
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - ${PWD}/..:/root/appliance:ro
+  tty: true
+  buildargs:
+    container: docker
+    http_proxy: ${http_proxy}
+    https_proxy: ${https_proxy}
+    no_proxy: 127.0.0.1,localhost,0.0.0.0
+  environment:
+    container: docker
+    http_proxy: ${http_proxy}
+    https_proxy: ${https_proxy}
+    no_proxy: 127.0.0.1,localhost,0.0.0.0
+
+provisioner:
+  name: ansible
+  ansible_args:
+  - -v
+  - -e@../../etc/appliance.variables.yml
+  - -e dnsmasq_listening_interfaces="{{['lo']|from_yaml}}"
+  - -e bootstrap_http_proxy_packages=${http_proxy}
+  - -e vault_keys_store_swift=false
+  - -e vault_token_store_swift=false
+  playbooks:
+    converge: ../../management.appliance.playbook.yml
+  env:
+    HTTP_PROXY: ${http_proxy}
+    NO_PROXY: 127.0.0.1,localhost,0.0.0.0
+
+    BACK_IP: 127.0.0.1
+    CONSUL_BOOTSTRAP_EXPECT: 1
+    CONSUL_DATACENTER: molecule
+    CONSUL_DNS_DOMAIN: mol
+    #CONSUL_DNS_SERVER:
+    CONSUL_ENCRYPT: fvfEZqx1UbGx8d8qbyL7/RM1RPPg37ic11T8m0490DQ=
+    #CONSUL_SERVERS:
+
+    #TRAEFIK_CONSUL_PREFIX: molecule
+
+dependency:
+  name: galaxy
+
+#lint: |
+#  set -e
+#  yamllint .
+#  ansible-lint
+#  flake8
+

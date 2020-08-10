@@ -61,10 +61,7 @@ rm -rf $TMP_BIN
 
 ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.yml
 
-ansible-playbook -t os-ready $PLAYBOOK \
+ansible-playbook -i localhost $PLAYBOOK \
 	-e@$ETC_PATH/appliance.variables.yml \
 	|| exit 1
 
-ansible-playbook -t master $PLAYBOOK \
-	-e@$ETC_PATH/appliance.variables.yml \
-	|| exit 1
