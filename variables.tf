@@ -137,7 +137,7 @@ variable "consul_server_rpc_port" {
   default     = 8300
 }
 
-variable "cli_rpc_port" {
+variable "consul_cli_rpc_port" {
   description = "The port used by all agents to handle RPC from the CLI."
   type        = number
   default     = 8400
@@ -161,10 +161,32 @@ variable "consul_http_api_port" {
   default     = 8500
 }
 
-variable "dns_port" {
+variable "consul_dns_port" {
   description = "The port used to resolve DNS queries."
   type        = number
   default     = 8600
+}
+
+##############################################################################
+# Nomad
+#
+
+variable "nomad_http_port" {
+  description = "The port to use for HTTP"
+  type        = number
+  default     = 4646
+}
+
+variable "nomad_rpc_port" {
+  description = "The port to use for RPC"
+  type        = number
+  default     = 4647
+}
+
+variable "nomad_serf_port" {
+  description = "The port to use for Serf"
+  type        = number
+  default     = 4648
 }
 
 

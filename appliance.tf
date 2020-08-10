@@ -82,6 +82,8 @@ resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
+# Consul
+
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server_rpc_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
@@ -95,8 +97,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rpc_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.cli_rpc_port
-  port_range_max = var.cli_rpc_port
+  port_range_min = var.consul_cli_rpc_port
+  port_range_max = var.consul_cli_rpc_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -145,8 +147,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_a
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tcp_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.dns_port
-  port_range_max = var.dns_port
+  port_range_min = var.consul_dns_port
+  port_range_max = var.consul_dns_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -155,8 +157,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tc
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_udp_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.dns_port
-  port_range_max = var.dns_port
+  port_range_min = var.consul_dns_port
+  port_range_max = var.consul_dns_port
   protocol       = "udp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -178,8 +180,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rp
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.cli_rpc_port
-  port_range_max  = var.cli_rpc_port
+  port_range_min  = var.consul_cli_rpc_port
+  port_range_max  = var.consul_cli_rpc_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -226,8 +228,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tc
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.dns_port
-  port_range_max  = var.dns_port
+  port_range_min  = var.consul_dns_port
+  port_range_max  = var.consul_dns_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -238,11 +240,52 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_ud
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.dns_port
-  port_range_max  = var.dns_port
+  port_range_min  = var.consul_dns_port
+  port_range_max  = var.consul_dns_port
   protocol        = "udp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
+# Nomad
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_http_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_http_port
+  port_range_max = var.nomad_http_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_rpc_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_rpc_port
+  port_range_max = var.nomad_rpc_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_serf_tcp_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_serf_port
+  port_range_max = var.nomad_serf_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_serf_udp_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_serf_port
+  port_range_max = var.nomad_serf_port
+  protocol       = "udp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
