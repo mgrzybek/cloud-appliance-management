@@ -43,6 +43,7 @@ resource "openstack_compute_instance_v2" "appliance-management" {
       git_repo_password = var.git_repo_password,
 
       git_repo_url = var.git_repo_url,
+      git_repo_checkout = var.git_repo_checkout,
 
       backoffice_ip_address = openstack_networking_port_v2.appliance-management-back-port.all_fixed_ips[0]
 
