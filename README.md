@@ -23,15 +23,17 @@ No requirements.
 | consul\_dns\_domain | DNS domain used by Consul agent | `string` | n/a | yes |
 | consul\_dns\_server | IP address to use for non-consul-managed domains | `string` | n/a | yes |
 | consul\_encrypt | Consul shared secret for cluster communication | `string` | n/a | yes |
+| consul\_http\_api\_port | The port used by clients to talk to the HTTP API | `number` | `8500` | no |
+| consul\_serf\_lan\_port | The port used to handle gossip in the LAN. Required by all agents. | `number` | `8301` | no |
+| consul\_server\_rpc\_port | The port used by servers to handle incoming requests from other agents. | `number` | `8300` | no |
 | default\_secgroup\_id | Default security group to use | `string` | n/a | yes |
 | dns\_port | The port used to resolve DNS queries. | `number` | `8600` | no |
 | flavor\_name | Cloud flavor to use | `string` | n/a | yes |
 | front\_net\_id | Network ID to use for the appliance | `string` | n/a | yes |
-| git\_repo\_checkout | branch/tag/commit to use | `string` | `"master"` | no |
+| git\_repo\_checkout | branch/tag/commit to use | `string` | `"terraform"` | no |
 | git\_repo\_password | git password | `string` | `""` | no |
 | git\_repo\_url | cloud-appliance-management repo | `string` | `"https://github.com/mgrzybek/cloud-appliance-management"` | no |
 | git\_repo\_username | git username | `string` | `""` | no |
-| http\_api\_port | The port used by clients to talk to the HTTP API | `number` | `8500` | no |
 | image\_name | Operating system image to use | `string` | n/a | yes |
 | internet\_http\_no\_proxy | Proxy skiplist | `string` | `""` | no |
 | internet\_http\_proxy\_url | HTTP proxy | `string` | `""` | no |
@@ -40,9 +42,7 @@ No requirements.
 | os\_password | Cloud password for some internal batches | `string` | n/a | yes |
 | os\_region\_name | Cloud region name | `string` | n/a | yes |
 | os\_username | Cloud username for some internal batches | `string` | n/a | yes |
-| serf\_lan\_port | The port used to handle gossip in the LAN. Required by all agents. | `number` | `8301` | no |
 | serf\_wan\_port | The port used by servers to gossip over the WAN to other servers. | `number` | `8302` | no |
-| server\_rpc\_port | The port used by servers to handle incoming requests from other agents. | `number` | `8300` | no |
 | static\_hosts | JSON array of host:ip tuples | `string` | `""` | no |
 | traefik\_consul\_prefix | Prefix used in services metadata to manage traefik's attributes | `string` | `"admin"` | no |
 

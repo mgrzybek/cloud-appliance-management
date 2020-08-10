@@ -131,7 +131,7 @@ variable "allowed_inbound_security_group_count" {
   default     = 0
 }
 
-variable "server_rpc_port" {
+variable "consul_server_rpc_port" {
   description = "The port used by servers to handle incoming requests from other agents."
   type        = number
   default     = 8300
@@ -143,7 +143,7 @@ variable "cli_rpc_port" {
   default     = 8400
 }
 
-variable "serf_lan_port" {
+variable "consul_serf_lan_port" {
   description = "The port used to handle gossip in the LAN. Required by all agents."
   type        = number
   default     = 8301
@@ -155,7 +155,7 @@ variable "serf_wan_port" {
   default     = 8302
 }
 
-variable "http_api_port" {
+variable "consul_http_api_port" {
   description = "The port used by clients to talk to the HTTP API"
   type        = number
   default     = 8500

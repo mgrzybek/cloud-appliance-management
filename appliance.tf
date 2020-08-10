@@ -42,7 +42,7 @@ resource "openstack_compute_instance_v2" "appliance-management" {
       git_repo_username = var.git_repo_username,
       git_repo_password = var.git_repo_password,
 
-      git_repo_url = var.git_repo_url,
+      git_repo_url      = var.git_repo_url,
       git_repo_checkout = var.git_repo_checkout,
 
       backoffice_ip_address = openstack_networking_port_v2.appliance-management-back-port.all_fixed_ips[0]
@@ -85,8 +85,8 @@ resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server_rpc_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.server_rpc_port
-  port_range_max = var.server_rpc_port
+  port_range_min = var.consul_server_rpc_port
+  port_range_max = var.consul_server_rpc_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -105,8 +105,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rp
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_lan_tcp_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.serf_lan_port
-  port_range_max = var.serf_lan_port
+  port_range_min = var.consul_serf_lan_port
+  port_range_max = var.consul_serf_lan_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -135,8 +135,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_w
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_api_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.http_api_port
-  port_range_max = var.http_api_port
+  port_range_min = var.consul_http_api_port
+  port_range_max = var.consul_http_api_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -166,8 +166,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.server_rpc_port
-  port_range_max  = var.server_rpc_port
+  port_range_min  = var.consul_server_rpc_port
+  port_range_max  = var.consul_server_rpc_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -214,8 +214,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_a
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.http_api_port
-  port_range_max  = var.http_api_port
+  port_range_min  = var.consul_http_api_port
+  port_range_max  = var.consul_http_api_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
