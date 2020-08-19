@@ -42,17 +42,19 @@ EOF
 export TMP_BIN=/tmp/bin
 
 # Get binaries
-swift download --output-dir=$TMP_BIN binaries
-for z in $TMP_BIN/*.zip ; do 
-	unzip -d /usr/local/bin $z && rm -f $z
-done
-
-if [ -d $TMP_BIN ] ; then
-	cd /usr/local/bin
-	for t in $TMP_BIN/*.gz ; do 
-		tar xf $t && rm -f $t
+if swift list | grep -q binaries ; then
+	swift download --output-dir=$TMP_BIN binaries
+	for z in $TMP_BIN/*.zip ; do
+		unzip -d /usr/local/bin $z && rm -f $z
 	done
-	mv $TMP_BIN/* /usr/local/bin/
+
+	if [ -d $TMP_BIN ] ; then
+		cd /usr/local/bin
+		for t in $TMP_BIN/*.gz ; do
+			tar xf $t && rm -f $t
+		done
+		mv $TMP_BIN/* /usr/local/bin/
+	fi
 fi
 
 chmod +x /usr/local/bin/*
