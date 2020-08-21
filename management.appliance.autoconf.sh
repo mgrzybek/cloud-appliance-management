@@ -61,7 +61,13 @@ chmod +x /usr/local/bin/*
 
 rm -rf $TMP_BIN
 
-ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.yml
+if curl -qs https://forge.dgfip.finances.rie.gouv.fr 2>&1 > /dev/null ; then
+	export remote_repo="intranet"
+else
+	export remote_repo="internet"
+fi
+
+ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.${remote_repo}.yml
 
 sed -i 's/hosts: all/hosts: localhost/' $PLAYBOOK
 
