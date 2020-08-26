@@ -13,7 +13,7 @@
 
   - name: restart netdata
     service:
-      name: restart netdata
+      name: netdata
       state: restarted
 
   roles:
