@@ -6,6 +6,11 @@ bootstrap_ntpdate_servers:
 bootstrap_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 bootstrap_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 bootstrap_http_proxy_packages: ''
+bootstrap_syslog_disable_local_storage: false
+bootstrap_syslog_target_host: "{{ lookup('env', 'SYSLOG_HOSTNAME') }}"
+bootstrap_syslog_target_port: "{{ lookup('env', 'SYSLOG_PORT') }}"
+bootstrap_syslog_target_protocol: "{{ lookup('env', 'SYSLOG_PROTOCOL') }}"
+bootstrap_syslog_target_log_format: "{{ lookup('env', 'SYSLOG_LOG_FORMAT') }}"
 
 ###############################################################################
 # Consul
@@ -20,7 +25,7 @@ consul_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 consul_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
 consul_bind: "{{ lookup('env', 'BACK_IP') }}"
-consul_client_addr: [ "{{ lookup('env', 'BACK_IP') }}", "127.0.0.1" ]
+consul_client_addr: ["{{ lookup('env', 'BACK_IP') }}", 127.0.0.1]
 consul_advertise_addr: "{{ lookup('env', 'BACK_IP') }}"
 consul_serf_lan_bind: "{{ lookup('env', 'BACK_IP') }}"
 

@@ -61,6 +61,12 @@ export OS_IDENTITY_API_VERSION=3
 #export VAULT_CONTAINER=$vault_container
 export VAULT_CONTAINER=vault
 
+# Set Syslog remote endpoint
+export SYSLOG_PROTOCOL="${syslog_protocol}"
+export SYSLOG_LOG_FORMAT="${syslog_log_format}"
+export SYSLOG_HOSTNAME="${syslog_hostname}"
+export SYSLOG_PORT="${syslog_port}"
+
 # Set Consul variables
 export CONSUL_DNS_DOMAIN="${consul_dns_domain}"
 export CONSUL_DNS_SERVER="${consul_dns_server}"
