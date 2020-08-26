@@ -116,7 +116,7 @@ nomad_nomad_ui:
     enable_tag_override: false
     tags:
     - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
-    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Headers(`X-Nomad-Token`)"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=HeadersRegexp(`X-Nomad-Token`, `^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$`)"
     checks:
     - http: http://0.0.0.0:4646
       interval: 60s
