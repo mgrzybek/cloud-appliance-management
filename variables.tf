@@ -230,9 +230,20 @@ variable "nomad_serf_port" {
   default     = 4648
 }
 
+##############################################################################
+# Vault
+#
+
+variable "vault_http_port" {
+  description = "The port to use for HTTP"
+  type        = number
+  default     = 8200
+}
 
 ##############################################################################
 # Management
+#
+
 variable "traefik_consul_prefix" {
   type        = string
   description = "Prefix used in services metadata to manage traefik's attributes"

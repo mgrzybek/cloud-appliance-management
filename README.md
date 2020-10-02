@@ -53,6 +53,7 @@ No requirements.
 | syslog\_port | Port number of the remote log management endpoint | `number` | `12201` | no |
 | syslog\_protocol | Protocol used to send logs: udp, tcp or http | `string` | `"udp"` | no |
 | traefik\_consul\_prefix | Prefix used in services metadata to manage traefik's attributes | `string` | `"admin"` | no |
+| vault\_http\_port | The port to use for HTTP | `number` | `8200` | no |
 
 ## Outputs
 

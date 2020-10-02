@@ -294,6 +294,19 @@ resource "openstack_networking_secgroup_rule_v2" "nomad_allow_serf_udp_inbound" 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
+# Vault
+
+resource "openstack_networking_secgroup_rule_v2" "vault_allow_http_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.vault_http_port
+  port_range_max = var.vault_http_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+# Netdata
 resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-netdata" {
   direction         = "ingress"
   ethertype         = "IPv4"
