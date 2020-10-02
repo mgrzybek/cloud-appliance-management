@@ -102,7 +102,7 @@ vault_vault_ui:
     - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
     - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=HeadersRegexp(`X-Vault-Token`, `^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$`) || HeadersRegexp(`X-Vault-Token`, `^s.[a-zA-Z0-9]{24}$`)"
     checks:
-    - http: http://0.0.0.0:8200
+    - http: http://0.0.0.0:8200/v1/sys/health
       interval: 60s
 
 ###############################################################################
