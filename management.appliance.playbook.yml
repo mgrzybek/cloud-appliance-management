@@ -61,6 +61,12 @@
   - name: Nomad role
     include_role: name=ansible-nomad
 
+  - name: Nomad | Set NOMAD_ADDR into /etc/environment
+    lineinfile:
+      regexp: ^NOMAD_ADDR
+      path: /etc/environment
+      line: NOMAD_ADDR=http://"{{ lookup('env', 'BACK_IP') }}:4646"
+
   - name: Vault | Set VAULT_ADDR into /etc/environment
     lineinfile:
       regexp: ^VAULT_ADDR
