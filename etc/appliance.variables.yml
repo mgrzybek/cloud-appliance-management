@@ -113,8 +113,12 @@ nomad_bootstrap_expect: "{{ lookup('env', 'CONSUL_BOOTSTRAP_EXPECT') }}"
 nomad_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 nomad_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
+nomad_address_http: "{{ lookup('env', 'BACK_IP') }}"
 nomad_address_rpc: "{{ lookup('env', 'BACK_IP') }}"
+nomad_address_serf: "{{ lookup('env', 'BACK_IP') }}"
+nomad_advertise_http: "{{ lookup('env', 'BACK_IP') }}"
 nomad_advertise_rpc: "{{ lookup('env', 'BACK_IP') }}"
+nomad_advertise_serf: "{{ lookup('env', 'BACK_IP') }}"
 
 nomad_nomad_ui:
 - service:
