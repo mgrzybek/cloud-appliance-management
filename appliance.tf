@@ -15,37 +15,42 @@ resource "openstack_compute_instance_v2" "appliance-management" {
   user_data = templatefile(
     "${path.module}/cloud-init.sh",
     {
-      internet_http_proxy_url = var.internet_http_proxy_url,
-      internet_http_no_proxy  = var.internet_http_no_proxy,
-      static_hosts            = var.static_hosts,
+      internet_http_proxy_url = var.internet_http_proxy_url
+      internet_http_no_proxy  = var.internet_http_no_proxy
+      static_hosts            = var.static_hosts
 
-      os_auth_url    = var.os_auth_url,
-      os_username    = var.os_username,
-      os_password    = var.os_password,
-      os_region_name = var.os_region_name,
+      os_auth_url    = var.os_auth_url
+      os_username    = var.os_username
+      os_password    = var.os_password
+      os_region_name = var.os_region_name
 
-      #metrics_endpoint_url = var.metrics_endpoint_url,
-      #influxdb_token       = var.influxdb_token,
-      #influxdb_bucket      = var.influxdb_bucket,
-      #influxdb_org         = var.influxdb_org,
+      #metrics_endpoint_url = var.metrics_endpoint_url
+      #influxdb_token       = var.influxdb_token
+      #influxdb_bucket      = var.influxdb_bucket
+      #influxdb_org         = var.influxdb_org
 
-      #logs_endpoint_url = var.logs_endpoint_url,
+      #logs_endpoint_url = var.logs_endpoint_url
 
-      consul_dns_domain = var.consul_dns_domain,
-      consul_datacenter = var.consul_datacenter,
-      consul_encrypt    = var.consul_encrypt,
-      consul_dns_server = var.consul_dns_server,
+      consul_dns_domain = var.consul_dns_domain
+      consul_datacenter = var.consul_datacenter
+      consul_encrypt    = var.consul_encrypt
+      consul_dns_server = var.consul_dns_server
 
-      ntp_server = var.ntp_server,
+      ntp_server = var.ntp_server
 
-      git_repo_checkout = var.git_repo_checkout,
-      git_repo_username = var.git_repo_username,
-      git_repo_password = var.git_repo_password,
-
-      git_repo_url = var.git_repo_url,
+      git_repo_checkout = var.git_repo_checkout
+      git_repo_username = var.git_repo_username
+      git_repo_password = var.git_repo_password
+      git_repo_url      = var.git_repo_url
 
       backoffice_ip_address = openstack_networking_port_v2.appliance-management-back-port.all_fixed_ips[0]
 
+      syslog_hostname   = var.syslog_hostname
+      syslog_port       = var.syslog_port
+      syslog_protocol   = var.syslog_protocol
+      syslog_log_format = var.syslog_log_format
+
+      logs_container = var.logs_container
 
       traefik_consul_prefix = var.traefik_consul_prefix
     }
@@ -81,11 +86,13 @@ resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
+# Consul
+
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server_rpc_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.server_rpc_port
-  port_range_max = var.server_rpc_port
+  port_range_min = var.consul_server_rpc_port
+  port_range_max = var.consul_server_rpc_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -94,8 +101,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rpc_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.cli_rpc_port
-  port_range_max = var.cli_rpc_port
+  port_range_min = var.consul_cli_rpc_port
+  port_range_max = var.consul_cli_rpc_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -104,8 +111,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rp
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_lan_tcp_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.serf_lan_port
-  port_range_max = var.serf_lan_port
+  port_range_min = var.consul_serf_lan_port
+  port_range_max = var.consul_serf_lan_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -134,8 +141,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_serf_w
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_api_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.http_api_port
-  port_range_max = var.http_api_port
+  port_range_min = var.consul_http_api_port
+  port_range_max = var.consul_http_api_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -144,8 +151,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_a
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tcp_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.dns_port
-  port_range_max = var.dns_port
+  port_range_min = var.consul_dns_port
+  port_range_max = var.consul_dns_port
   protocol       = "tcp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -154,8 +161,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tc
 resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_udp_inbound" {
   ethertype      = "IPv4"
   direction      = "ingress"
-  port_range_min = var.dns_port
-  port_range_max = var.dns_port
+  port_range_min = var.consul_dns_port
+  port_range_max = var.consul_dns_port
   protocol       = "udp"
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
@@ -165,8 +172,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_server
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.server_rpc_port
-  port_range_max  = var.server_rpc_port
+  port_range_min  = var.consul_server_rpc_port
+  port_range_max  = var.consul_server_rpc_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -177,8 +184,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_cli_rp
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.cli_rpc_port
-  port_range_max  = var.cli_rpc_port
+  port_range_min  = var.consul_cli_rpc_port
+  port_range_max  = var.consul_cli_rpc_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -213,8 +220,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_http_a
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.http_api_port
-  port_range_max  = var.http_api_port
+  port_range_min  = var.consul_http_api_port
+  port_range_max  = var.consul_http_api_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -225,8 +232,8 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_tc
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.dns_port
-  port_range_max  = var.dns_port
+  port_range_min  = var.consul_dns_port
+  port_range_max  = var.consul_dns_port
   protocol        = "tcp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
@@ -237,11 +244,75 @@ resource "openstack_networking_secgroup_rule_v2" "management_consul_allow_dns_ud
   count           = var.allowed_inbound_security_group_count
   ethertype       = "IPv4"
   direction       = "ingress"
-  port_range_min  = var.dns_port
-  port_range_max  = var.dns_port
+  port_range_min  = var.consul_dns_port
+  port_range_max  = var.consul_dns_port
   protocol        = "udp"
   remote_group_id = element(var.allowed_inbound_security_group_ids, count.index)
 
   security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
 }
 
+# Nomad
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_http_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_http_port
+  port_range_max = var.nomad_http_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_rpc_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_rpc_port
+  port_range_max = var.nomad_rpc_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_serf_tcp_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_serf_port
+  port_range_max = var.nomad_serf_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "nomad_allow_serf_udp_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.nomad_serf_port
+  port_range_max = var.nomad_serf_port
+  protocol       = "udp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+# Vault
+
+resource "openstack_networking_secgroup_rule_v2" "vault_allow_http_inbound" {
+  ethertype      = "IPv4"
+  direction      = "ingress"
+  port_range_min = var.vault_http_port
+  port_range_max = var.vault_http_port
+  protocol       = "tcp"
+
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}
+
+# Netdata
+resource "openstack_networking_secgroup_rule_v2" "appliance-management-secgroup-netdata" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 19999
+  port_range_max    = 19999
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.appliance-management-secgroup.id
+}

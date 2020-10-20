@@ -6,6 +6,11 @@ bootstrap_ntpdate_servers:
 bootstrap_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 bootstrap_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 bootstrap_http_proxy_packages: ''
+bootstrap_syslog_disable_local_storage: false
+bootstrap_syslog_target_host: "{{ lookup('env', 'SYSLOG_HOSTNAME') }}"
+bootstrap_syslog_target_port: "{{ lookup('env', 'SYSLOG_PORT') }}"
+bootstrap_syslog_target_protocol: "{{ lookup('env', 'SYSLOG_PROTOCOL') }}"
+bootstrap_syslog_target_log_format: "{{ lookup('env', 'SYSLOG_LOG_FORMAT') }}"
 
 ###############################################################################
 # Consul
@@ -20,6 +25,7 @@ consul_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 consul_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
 consul_bind: "{{ lookup('env', 'BACK_IP') }}"
+consul_client_addr: ["{{ lookup('env', 'BACK_IP') }}", 127.0.0.1]
 consul_advertise_addr: "{{ lookup('env', 'BACK_IP') }}"
 consul_serf_lan_bind: "{{ lookup('env', 'BACK_IP') }}"
 
@@ -94,10 +100,9 @@ vault_vault_ui:
     enable_tag_override: false
     tags:
     - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
-    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.entrypoints=web"
-    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=Host(`vault`)"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.vault-ui.rule=HeadersRegexp(`X-Vault-Token`, `^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$`) || HeadersRegexp(`X-Vault-Token`, `^s.[a-zA-Z0-9]{24}$`)"
     checks:
-    - http: http://0.0.0.0:8200
+    - http: http://0.0.0.0:8200/v1/sys/health
       interval: 60s
 
 ###############################################################################
@@ -108,6 +113,13 @@ nomad_bootstrap_expect: "{{ lookup('env', 'CONSUL_BOOTSTRAP_EXPECT') }}"
 nomad_http_proxy: "{{ lookup('env', 'HTTP_PROXY') }}"
 nomad_http_no_proxy: "{{ lookup('env', 'NO_PROXY') }}"
 
+nomad_address_http: "{{ lookup('env', 'BACK_IP') }}"
+nomad_address_rpc: "{{ lookup('env', 'BACK_IP') }}"
+nomad_address_serf: "{{ lookup('env', 'BACK_IP') }}"
+nomad_advertise_http: "{{ lookup('env', 'BACK_IP') }}"
+nomad_advertise_rpc: "{{ lookup('env', 'BACK_IP') }}"
+nomad_advertise_serf: "{{ lookup('env', 'BACK_IP') }}"
+
 nomad_nomad_ui:
 - service:
     name: nomad-ui
@@ -115,9 +127,26 @@ nomad_nomad_ui:
     enable_tag_override: false
     tags:
     - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
-    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.entrypoints=web"
-    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=Host(`nomad`)"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.nomad-ui.rule=HeadersRegexp(`X-Nomad-Token`, `^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$`) || HeadersRegexp(`X-Nomad-Token`, `^s.[a-zA-Z0-9]{24}$`)"
     checks:
-    - http: http://0.0.0.0:4646
+    - http: http://{{ lookup('env', 'BACK_IP') }}:4646
       interval: 60s
 
+###############################################################################
+# Netdata
+#
+netdata_consul_service:
+- service:
+    name: netdata-{{ ansible_hostname }}
+    port: 19999
+    enable_tag_override: false
+    tags:
+    - appliance
+    - management
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.enable=true"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.netdata-{{ ansible_hostname }}.rule=PathPrefix(`/perf/{{ ansible_hostname }}`)"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.middlewares.netdata-{{ ansible_hostname }}.stripprefix.prefixes=/perf/{{ ansible_hostname }}"
+    - "{{ lookup('env', 'TRAEFIK_CONSUL_PREFIX') }}.http.routers.netdata-{{ ansible_hostname }}.middlewares=netdata-{{ ansible_hostname }}"
+    checks:
+    - http: http://0.0.0.0:19999/
+      interval: 60s

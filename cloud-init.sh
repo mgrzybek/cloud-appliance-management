@@ -4,10 +4,10 @@ set -x
 # Proxy
 export HTTPS_PROXY=${internet_http_proxy_url}
 export HTTP_PROXY=${internet_http_proxy_url}
-export NO_PROXY=${internet_http_no_proxy},127.0.0.1,localhost,0.0.0.0
+export NO_PROXY=${internet_http_no_proxy},127.0.0.1,localhost,0.0.0.0,${backoffice_ip_address}
 export https_proxy=${internet_http_proxy_url}
 export http_proxy=${internet_http_proxy_url}
-export no_proxy=${internet_http_no_proxy},127.0.0.1,localhost,0.0.0.0
+export no_proxy=${internet_http_no_proxy},127.0.0.1,localhost,0.0.0.0,${backoffice_ip_address}
 
 # Install required packages to start git-ops-based auto-configuratiom
 if which yum > /dev/null 2>&1 ; then
@@ -60,6 +60,12 @@ export OS_IDENTITY_API_VERSION=3
 # Swift container
 #export VAULT_CONTAINER=$vault_container
 export VAULT_CONTAINER=vault
+
+# Set Syslog remote endpoint
+export SYSLOG_PROTOCOL="${syslog_protocol}"
+export SYSLOG_LOG_FORMAT="${syslog_log_format}"
+export SYSLOG_HOSTNAME="${syslog_hostname}"
+export SYSLOG_PORT="${syslog_port}"
 
 # Set Consul variables
 export CONSUL_DNS_DOMAIN="${consul_dns_domain}"

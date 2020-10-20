@@ -11,5 +11,5 @@
   - name: Check nomad membership
     fail: msg="Nomad must be a server and alive"
     when:
-      - ((result.stdout_lines[1] | regex_replace('\s+', ' ')).split(' '))[3] != 'alive'
-      - ((result.stdout_lines[1] | regex_replace('\s+', ' ')).split(' '))[4] != 'true'
+    - ((result.stdout_lines[1] | regex_replace('\s+', ' ')).split(' '))[3] != 'alive'
+    - ((result.stdout_lines[1] | regex_replace('\s+', ' ')).split(' '))[4] != 'true'

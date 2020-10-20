@@ -42,29 +42,36 @@ EOF
 export TMP_BIN=/tmp/bin
 
 # Get binaries
-swift download --output-dir=$TMP_BIN binaries
-for z in $TMP_BIN/*.zip ; do 
-	unzip -d /usr/local/bin $z && rm -f $z
-done
-
-if [ -d $TMP_BIN ] ; then
-	cd /usr/local/bin
-	for t in $TMP_BIN/*.gz ; do 
-		tar xf $t && rm -f $t
+if swift list | grep -q binaries ; then
+	swift download --output-dir=$TMP_BIN binaries
+	for z in $TMP_BIN/*.zip ; do
+		unzip -d /usr/local/bin $z && rm -f $z
 	done
-	mv $TMP_BIN/* /usr/local/bin/
+
+	if [ -d $TMP_BIN ] ; then
+		cd /usr/local/bin
+		for t in $TMP_BIN/*.gz ; do
+			tar xf $t && rm -f $t
+		done
+		mv $TMP_BIN/* /usr/local/bin/
+	fi
 fi
 
 chmod +x /usr/local/bin/*
 
 rm -rf $TMP_BIN
 
-ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.yml
+if curl -qs https://forge.dgfip.finances.rie.gouv.fr 2>&1 > /dev/null ; then
+	export remote_repo="intranet"
+else
+	export remote_repo="internet"
+fi
 
-ansible-playbook -t os-ready $PLAYBOOK \
+ansible-galaxy install -r $ETC_PATH/appliance.ansible_requirements.${remote_repo}.yml
+
+sed -i 's/hosts: all/hosts: localhost/' $PLAYBOOK
+
+ansible-playbook -i localhost $PLAYBOOK \
 	-e@$ETC_PATH/appliance.variables.yml \
 	|| exit 1
 
-ansible-playbook -t master $PLAYBOOK \
-	-e@$ETC_PATH/appliance.variables.yml \
-	|| exit 1

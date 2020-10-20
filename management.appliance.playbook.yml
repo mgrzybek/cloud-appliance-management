@@ -6,57 +6,96 @@
   tags: os-ready
 
   roles:
-    - role: ansible-bootstrap-system
-    - role: ansible-consul
-    
-- name:  Management services configuration
+  - role: ansible-bootstrap-system
+  - role: ansible-consul
+
+- name: Management services configuration
   hosts: all
   tags: master
 
+  handlers:
+  - name: reload consul
+    service:
+      name: consul
+      state: reloaded
+
+  - name: restart netdata
+    service:
+      name: netdata
+      state: restarted
+
   tasks:
-    - name: Wait for Consul to be online
-      wait_for: port=8500 timeout=20
+  - name: Consul | Wait for Consul to be online
+    wait_for: port=8500 timeout=20
 
-    - name: Wait for consul quorum
-      ignore_errors: yes
-      retries: 300
-      delay: 10
-      register: catalog_info
-      command: consul catalog services
+  - name: Consul | Wait for consul quorum
+    ignore_errors: yes
+    retries: 300
+    delay: 10
+    register: catalog_info
+    command: consul catalog services
 
-    - name: Vault role
-      include_role: name=ansible-vault
+  - name: Vault role
+    include_role: name=ansible-vault
 
-    - name: Get vault token for Nomad
-      when: vault_token_store_consul_kv | lower == 'true'
-      block:
-          - name: Get vault token from Consul
-            register: store_result
-            shell: consul kv get nomad/token_nomad-server
+  - name: Nomad | Get vault token for Nomad
+    when: vault_token_store_consul_kv | lower == 'true'
+    block:
+    - name: Nomad | Get vault token from Consul
+      register: store_result
+      shell: consul kv get nomad/token_nomad-server
 
-          - name: Set nomad fact
-            set_fact: nomad_vault_token="{{ store_result.stdout }}"
+    - name: Nomad | Set nomad fact
+      set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
-    - name: Get vault token for Nomad
-      when: vault_token_store_swift | lower == 'true'
-      block:
-          - name: Get vault token from Swift
-            register: store_result
-            shell: swift download --output - nomad token_nomad-server
+  - name: Nomad | Get vault token for Nomad
+    when: vault_token_store_swift | lower == 'true'
+    block:
+    - name: Nomad | Get vault token from Swift
+      register: store_result
+      shell: swift download --output - nomad token_nomad-server
 
-          - name: Set nomad fact
-            set_fact: nomad_vault_token="{{ store_result.stdout }}"
+    - name: Nomad | Set nomad fact
+      set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
-    - name: Nomad role
-      include_role: name=ansible-nomad
+  - name: Nomad role
+    include_role: name=ansible-nomad
 
-    - name: Set VAULT_ADDR into /etc/environment
+  - name: Nomad | Set NOMAD_ADDR into /etc/environment
+    lineinfile:
+      regexp: ^NOMAD_ADDR
+      path: /etc/environment
+      line: NOMAD_ADDR=http://{{ lookup('env', 'BACK_IP') }}:4646
+
+  - name: Vault | Set VAULT_ADDR into /etc/environment
+    lineinfile:
+      regexp: ^VAULT_ADDR
+      path: /etc/environment
+      line: VAULT_ADDR=http://localhost:8200
+
+  - name: Consul | Set HTTP proxy checks
+    when: proxy_consul is defined
+    with_items: '{{ proxy_consul }}'
+    template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json
+
+  - name: Netdata
+    when: ansible_pkg_mgr | lower == 'apt'
+    block:
+    - name: Netdata | Install package
+      package:
+        name: netdata
+        state: present
+
+    - name: Netdata | Configure service
+      notify: restart netdata
       lineinfile:
-          regexp: '^VAULT_ADDR'
-          path: /etc/environment
-          line: "VAULT_ADDR=http://localhost:8200"
+        path: /etc/netdata/netdata.conf
+        regexp: ^(\s+)bind socket to IP =
+        line: \1bind socket to IP = {{ consul_bind }}
 
-    - name: Set HTTP proxy checks
-      when: proxy_consul is defined
-      with_items: "{{ proxy_consul }}"
-      template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json
+    - name: Netdata | Configure consul service
+      notify: reload consul
+      copy:
+        content: '{{ item.content }}'
+        dest: /etc/consul.d/{{ item.name }}.json
+      with_items:
