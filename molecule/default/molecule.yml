@@ -93,6 +93,7 @@ provisioner:
 
 dependency:
   name: galaxy
+  roles-file: ../../etc/appliance.ansible_requirements.yml
 
 #lint: |
 #  set -e
