@@ -98,4 +98,4 @@
       copy:
         content: '{{ item.content }}'
         dest: /etc/consul.d/{{ item.name }}.json
-      with_items:
+      with_items: "{{ netdata_consul_service }}"
