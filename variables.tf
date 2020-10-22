@@ -13,7 +13,7 @@ variable "front_net_id" {
 
   validation {
     condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.front_net_id))
-    error_message = "This must be a valid netowrk ID"
+    error_message = "This must be a valid netowrk ID."
   }
 }
 
@@ -21,8 +21,8 @@ variable "back_net_id" {
   type        = string
   description = "Backoffice network ID to use for the appliance"
   validation {
-    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.front_net_id))
-    error_message = "This must be a valid netowrk ID"
+    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.back_net_id))
+    error_message = "This must be a valid netowrk ID."
   }
 }
 
@@ -74,8 +74,8 @@ variable "default_secgroup_id" {
   type        = string
   description = "Default security group to use"
   validation {
-    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.front_net_id))
-    error_message = "This must be a valid secgroup ID"
+    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.default_secgroup_id))
+    error_message = "This must be a valid secgroup ID."
   }
 }
 
@@ -116,7 +116,7 @@ variable "syslog_protocol" {
 
   validation {
     condition     = var.syslog_protocol == "udp" || var.syslog_protocol == "tcp" || var.syslog_protocol == "http"
-    error_message = "The log management protocol must be 'udp', 'tcp' or 'http'"
+    error_message = "The log management protocol must be 'udp', 'tcp' or 'http'."
   }
 }
 
