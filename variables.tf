@@ -127,7 +127,7 @@ variable "syslog_log_format" {
 
   validation {
     condition     = var.syslog_log_format == "gelf" || var.syslog_log_format == "syslog"
-    error_message = "The log format must be 'gelf' or 'syslog'"
+    error_message = "The log format must be 'gelf' or 'syslog'."
   }
 }
 
