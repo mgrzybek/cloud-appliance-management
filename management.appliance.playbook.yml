@@ -96,6 +96,7 @@
     - name: Netdata | Configure consul service
       notify: reload consul
       copy:
-        content: '{{ item.content }}'
-        dest: /etc/consul.d/{{ item.name }}.json
+        content: '{{ item }}'
       with_items:
+      - name: netdata
+        content: '{{ netdata_consul_service[0] | to_nice_json }}'

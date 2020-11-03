@@ -10,11 +10,20 @@ variable "image_name" {
 variable "front_net_id" {
   type        = string
   description = "Network ID to use for the appliance"
+
+  validation {
+    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.front_net_id))
+    error_message = "This must be a valid netowrk ID."
+  }
 }
 
 variable "back_net_id" {
   type        = string
   description = "Backoffice network ID to use for the appliance"
+  validation {
+    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.back_net_id))
+    error_message = "This must be a valid netowrk ID."
+  }
 }
 
 variable "os_username" {
@@ -64,6 +73,10 @@ variable "git_repo_checkout" {
 variable "default_secgroup_id" {
   type        = string
   description = "Default security group to use"
+  validation {
+    condition     = can(regex("[[:alnum:]]{8}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{4}-[[:alnum:]]{12}", var.default_secgroup_id))
+    error_message = "This must be a valid secgroup ID."
+  }
 }
 
 variable "internet_http_proxy_url" {
@@ -101,10 +114,10 @@ variable "syslog_protocol" {
   description = "Protocol used to send logs: udp, tcp or http"
   default     = "udp"
 
-  #  validation {
-  #    condition     = var.syslog_protocol == "udp" || var.syslog_protocol == "tcp" || var.syslog_protocol == "http"
-  #    error_message = "The log management protocol must be 'udp', 'tcp' or 'http'"
-  #  }
+  validation {
+    condition     = var.syslog_protocol == "udp" || var.syslog_protocol == "tcp" || var.syslog_protocol == "http"
+    error_message = "The log management protocol must be 'udp', 'tcp' or 'http'."
+  }
 }
 
 variable "syslog_log_format" {
@@ -112,10 +125,10 @@ variable "syslog_log_format" {
   description = "Log format used to send logs: gelf or syslog"
   default     = "gelf"
 
-  #  validation {
-  #    condition     = var.syslog_log_format == "gelf" || var.syslog_log_format == "syslog"
-  #    error_message = "The log format must be 'gelf' or 'syslog'"
-  #  }
+  validation {
+    condition     = var.syslog_log_format == "gelf" || var.syslog_log_format == "syslog"
+    error_message = "The log format must be 'gelf' or 'syslog'."
+  }
 }
 
 variable "syslog_hostname" {
