@@ -48,6 +48,17 @@ else
 	fi
 fi
 
+# DNS: Populate /etc/hosts
+if [ ! -z "${static_hosts}" ] ; then
+	echo ${static_hosts} > /tmp/static_hosts
+	cat /tmp/static_hosts \
+	| perl -pe 's/\[|\]|{|}//g' \
+	|  tr ',' '\n' \
+	| awk -F: '{print $2,$1}' \
+	| awk '{print $1,$2}' \
+	>> /etc/hosts
+fi
+
 # Configure ansible to work without an entire environment set
 sed -i 's/~/\/root/' /etc/ansible/ansible.cfg
 sed -i 's/^#remote_tmp/remote_tmp/' /etc/ansible/ansible.cfg
