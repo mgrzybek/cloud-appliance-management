@@ -67,7 +67,7 @@ variable "git_repo_url" {
 variable "git_repo_checkout" {
   type        = string
   description = "branch/tag/commit to use"
-  default     = "terraform"
+  default     = "master"
 }
 
 variable "default_secgroup_id" {
