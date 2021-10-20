@@ -29,6 +29,7 @@
     wait_for: port=8500 timeout=20
 
   - name: Consul | Wait for consul quorum
+    changed_when: false
     ignore_errors: yes
     retries: 300
     delay: 10
@@ -39,7 +40,9 @@
     include_role: name=ansible-vault
 
   - name: Nomad | Get vault token for Nomad
-    when: vault_token_store_consul_kv | lower == 'true'
+    when:
+    - vault_token_store_consul_kv is defined
+    - vault_token_store_consul_kv | lower == 'true'
     block:
     - name: Nomad | Get vault token from Consul
       register: store_result
@@ -49,7 +52,9 @@
       set_fact: nomad_vault_token="{{ store_result.stdout }}"
 
   - name: Nomad | Get vault token for Nomad
-    when: vault_token_store_swift | lower == 'true'
+    when:
+    - vault_token_store_swift is defined
+    - vault_token_store_swift | lower == 'true'
     block:
     - name: Nomad | Get vault token from Swift
       register: store_result
@@ -61,26 +66,44 @@
   - name: Nomad role
     include_role: name=ansible-nomad
 
-  - name: Nomad | Set NOMAD_ADDR into /etc/environment
-    lineinfile:
-      regexp: ^NOMAD_ADDR
-      path: /etc/environment
-      line: NOMAD_ADDR=http://{{ lookup('env', 'BACK_IP') }}:4646
+  - name: Linux systems
+    when: ansible_distribution | lower == "linux"
+    block:
+    - name: Nomad | Set NOMAD_ADDR into /etc/environment
+      lineinfile:
+        regexp: ^NOMAD_ADDR
+        path: /etc/environment
+        line: NOMAD_ADDR=http://{{ lookup('env', 'BACK_IP') }}:4646
 
-  - name: Vault | Set VAULT_ADDR into /etc/environment
-    lineinfile:
-      regexp: ^VAULT_ADDR
-      path: /etc/environment
-      line: VAULT_ADDR=http://localhost:8200
+    - name: Vault | Set VAULT_ADDR into /etc/environment
+      lineinfile:
+        regexp: ^VAULT_ADDR
+        path: /etc/environment
+        line: VAULT_ADDR=http://localhost:8200
 
-  - name: Consul | Set HTTP proxy checks
-    when: proxy_consul is defined
-    with_items: '{{ proxy_consul }}'
-    template: src=service.consul.json.j2 dest=/etc/consul.d/{{ item.service.name }}.json
+    - name: Consul | Set HTTP proxy checks
+      when: proxy_consul is defined
+      with_items: '{{ proxy_consul }}'
+      template:
+        src: service.consul.json.j2
+        dest: /etc/consul.d/{{ item.service.name }}.json
+      notify: reload consul
 
   - name: Netdata
-    when: ansible_pkg_mgr | lower == 'apt'
+    when: ansible_pkg_mgr | lower == 'apt' or ansible_distribution | lower != "linux"
     block:
+    - name: Netdata | Set local facts
+      when: ansible_pkg_mgr | lower == 'apt'
+      set_fact:
+        netdata_conf_file: /etc/netdata/netdata.conf
+        consul_conf_dir: /etc/consul.d
+
+    - name: Netdata | Set local facts
+      when: ansible_distribution | lower != "linux"
+      set_fact:
+        netdata_conf_file: /usr/local/etc/netdata/netdata.conf
+        consul_conf_dir: /usr/local/etc/consul.d
+
     - name: Netdata | Install package
       package:
         name: netdata
@@ -89,15 +112,16 @@
     - name: Netdata | Configure service
       notify: restart netdata
       lineinfile:
-        path: /etc/netdata/netdata.conf
+        path: '{{ netdata_conf_file }}'
         regexp: ^(\s+)bind socket to IP =
-        line: \1bind socket to IP = {{ consul_bind }}
+        line: \1bind socket to IP = {{ consul_bind | default(ansible_default_ipv4.address) }}
 
     - name: Netdata | Configure consul service
+      when: netdata_consul_service is defined
       notify: reload consul
       copy:
         content: '{{ item }}'
-        dest: /etc/consul.d/{{ item.name }}.json
+        dest: '{{ consul_conf_dir }}/{{ item.name }}.json'
       with_items:
       - name: netdata
         content: '{{ netdata_consul_service[0] | to_nice_json }}'
